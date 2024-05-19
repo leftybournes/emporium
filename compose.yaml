@@ -1,0 +1,32 @@
+services:
+    web:
+        build: "."
+        command: "bin/dev"
+        restart: "unless-stopped"
+        tty: true
+        volumes:
+            - ".:/rails"
+        environment:
+            DATABASE_HOST: "${DATABASE_HOST:-database}"
+            DATABASE_PORT: "${DATABASE_PORT:-5432}"
+            DATABASE_USER: "${DATABASE_USER:-emporium}"
+            DATABASE_PASSWORD: "${DATABASE_PASSWORD:-emporium}"
+            DATABASE_NAME: "${DATABASE_NAME:-emporium_development}"
+        ports:
+            - "${APP_PORT:-3000}:3000"
+        depends_on:
+            - "database"
+    database:
+        image: "postgres:16.3"
+        restart: "unless-stopped"
+        environment:
+            POSTGRES_USER: "${DATABASE_USER:-emporium}"
+            POSTGRES_PASSWORD: "${DATABASE_PASSWORD:-emporium}"
+            POSTGRES_DB: "${DATABASE_NAME:-emporium_development}"
+        volumes:
+            - "data:/var/lib/postgresql/data"
+        ports:
+            - "${DATABASE_PORT:-5432}:5432"
+
+volumes:
+    data:
